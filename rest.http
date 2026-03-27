@@ -1,0 +1,60 @@
+### Home
+GET http://localhost:1204
+
+
+### Register Admin
+POST http://localhost:1204/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Admin User",
+  "email": "admin@example.com",
+  "password": "123456"
+}
+
+
+### Login Admin
+POST http://localhost:1204/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "123456"
+}
+
+
+### Submit Contact Form (Public)
+POST http://localhost:1204/api/contacts
+Content-Type: application/json
+
+{
+  "name": "Ashish",
+  "email": "ashish@example.com",
+  "subject": "Need website development",
+  "message": "I want a MERN website for my business."
+}
+
+
+### Get All Contact Submissions (Admin)
+GET http://localhost:1204/api/contacts
+
+
+### Get Single Contact Submission (Admin)
+GET http://localhost:1204/api/contacts/PASTE_CONTACT_ID_HERE
+
+
+### Update Contact Status (Admin)
+PUT http://localhost:1204/api/contacts/PASTE_CONTACT_ID_HERE/status
+Content-Type: application/json
+
+{
+  "status": "read"
+}
+
+
+### Delete Contact Submission (Admin)
+DELETE http://localhost:1204/api/contacts/PASTE_CONTACT_ID_HERE
+
+
+### Logout Admin
+POST http://localhost:1204/api/auth/logout
