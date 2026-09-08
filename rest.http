@@ -1,10 +1,11 @@
 ### Home
-GET http://localhost:1204
+GET http://localhost:1198
 
 
 ### Register Admin
-POST http://localhost:1204/api/auth/register
+POST http://localhost:1198/api/auth/register
 Content-Type: application/json
+x-admin-registration-secret: {{$dotenv ADMIN_REGISTRATION_SECRET}}
 
 {
   "name": "Admin User",
@@ -14,7 +15,7 @@ Content-Type: application/json
 
 
 ### Login Admin
-POST http://localhost:1204/api/auth/login
+POST http://localhost:1198/api/auth/login
 Content-Type: application/json
 
 {
@@ -24,27 +25,27 @@ Content-Type: application/json
 
 
 ### Submit Contact Form (Public)
-POST http://localhost:1204/api/contacts
+POST http://localhost:1198/api/contacts
 Content-Type: application/json
 
 {
   "name": "Ashish",
   "email": "ashish@example.com",
-  "subject": "Need website development",
-  "message": "I want a MERN website for my business."
+  "subject": "Website inquiry",
+  "message": "I would like to discuss a project for https://ashishranjan.in/."
 }
 
 
 ### Get All Contact Submissions (Admin)
-GET http://localhost:1204/api/contacts
+GET http://localhost:1198/api/contacts
 
 
 ### Get Single Contact Submission (Admin)
-GET http://localhost:1204/api/contacts/PASTE_CONTACT_ID_HERE
+GET http://localhost:1198/api/contacts/PASTE_CONTACT_ID_HERE
 
 
 ### Update Contact Status (Admin)
-PUT http://localhost:1204/api/contacts/PASTE_CONTACT_ID_HERE/status
+PUT http://localhost:1198/api/contacts/PASTE_CONTACT_ID_HERE/status
 Content-Type: application/json
 
 {
@@ -53,8 +54,8 @@ Content-Type: application/json
 
 
 ### Delete Contact Submission (Admin)
-DELETE http://localhost:1204/api/contacts/PASTE_CONTACT_ID_HERE
+DELETE http://localhost:1198/api/contacts/PASTE_CONTACT_ID_HERE
 
 
 ### Logout Admin
-POST http://localhost:1204/api/auth/logout
+POST http://localhost:1198/api/auth/logout

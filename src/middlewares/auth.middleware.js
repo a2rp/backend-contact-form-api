@@ -3,7 +3,7 @@ const Admin = require("../models/admin.model");
 
 const protectAdmin = async (req, res, next) => {
     try {
-        const token = req.cookies.token;
+        const token = req.cookies && req.cookies.token;
 
         if (!token) {
             return res.status(401).json({
@@ -26,7 +26,6 @@ const protectAdmin = async (req, res, next) => {
     } catch (error) {
         return res.status(401).json({
             message: "Not authorized, invalid token",
-            error: error.message,
         });
     }
 };

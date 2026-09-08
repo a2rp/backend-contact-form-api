@@ -1,38 +1,36 @@
-const express = require("express");
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv");
-const connectDB = require("./config/db");
-const authRoutes = require("./routes/auth.routes");
-const contactRoutes = require("./routes/contact.routes");
 
 dotenv.config();
 
-connectDB();
+const app = require("./app");
+const connectDB = require("./config/db");
 
-const app = express();
+const PORT = Number(process.env.PORT) || 1198;
 
-app.use(express.json());
-app.use(cookieParser());
+const startServer = async () => {
+    if (!process.env.MONGO_URI) {
+        throw new Error("MONGO_URI is not configured");
+    }
 
-app.use(
-    cors({
-        origin: "http://localhost:5173",
-        credentials: true,
-    }),
-);
+    if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
+        throw new Error("JWT_SECRET must contain at least 32 characters");
+    }
 
-app.get("/", (req, res) => {
-    res.json({
-        message: "Contact Form API is running",
+    if (
+        !process.env.ADMIN_REGISTRATION_SECRET ||
+        process.env.ADMIN_REGISTRATION_SECRET.length < 16
+    ) {
+        throw new Error("ADMIN_REGISTRATION_SECRET must contain at least 16 characters");
+    }
+
+    await connectDB();
+
+    app.listen(PORT, () => {
+        console.log(`[API] Server running on port ${PORT}`);
     });
-});
+};
 
-app.use("/api/auth", authRoutes);
-app.use("/api/contacts", contactRoutes);
-
-const PORT = process.env.PORT || 1204;
-
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+startServer().catch((error) => {
+    console.error("[API] Server startup failed:", error.message);
+    process.exit(1);
 });

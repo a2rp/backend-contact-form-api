@@ -7,6 +7,7 @@ const adminSchema = new mongoose.Schema(
             type: String,
             required: [true, "Name is required"],
             trim: true,
+            maxlength: 100,
         },
         email: {
             type: String,
@@ -14,6 +15,7 @@ const adminSchema = new mongoose.Schema(
             unique: true,
             trim: true,
             lowercase: true,
+            match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email must be valid"],
         },
         password: {
             type: String,
