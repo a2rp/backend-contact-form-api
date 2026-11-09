@@ -10,7 +10,7 @@ x-admin-registration-secret: {{$dotenv ADMIN_REGISTRATION_SECRET}}
 {
   "name": "Admin User",
   "email": "admin@example.com",
-  "password": "123456"
+  "password": "ReplaceThisWithYourOwnPassphrase2026!"
 }
 
 
@@ -20,7 +20,7 @@ Content-Type: application/json
 
 {
   "email": "admin@example.com",
-  "password": "123456"
+  "password": "ReplaceThisWithYourOwnPassphrase2026!"
 }
 
 

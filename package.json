@@ -1,7 +1,7 @@
 {
     "name": "backend-contact-form-api",
     "version": "1.0.0",
-    "description": "Backend API for contact form submissions and admin read panel",
+    "description": "Express 5 and MongoDB API for contact form submissions with a protected admin inbox",
     "main": "src/index.js",
     "scripts": {
         "dev": "nodemon src/index.js",
@@ -14,11 +14,19 @@
         "mongodb",
         "contact-form",
         "admin-panel",
-        "authentication"
+        "authentication",
+        "admin-api",
+        "contact-management",
+        "jwt",
+        "rate-limiting",
+        "helmet"
     ],
     "author": "Ashish Ranjan",
-    "license": "ISC",
+    "license": "MIT",
     "type": "commonjs",
+    "engines": {
+        "node": ">=20.19.0"
+    },
     "dependencies": {
         "bcryptjs": "^3.0.3",
         "cookie-parser": "^1.4.7",
@@ -26,6 +34,7 @@
         "dotenv": "^17.3.1",
         "express": "^5.2.1",
         "express-rate-limit": "^8.7.0",
+        "helmet": "^8.3.0",
         "jsonwebtoken": "^9.0.3",
         "mongoose": "^9.3.3"
     },

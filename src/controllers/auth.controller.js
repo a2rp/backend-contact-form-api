@@ -6,6 +6,7 @@ const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const generateToken = (adminId) => {
     return jwt.sign({ adminId }, process.env.JWT_SECRET, {
         expiresIn: "7d",
+        algorithm: "HS256",
     });
 };
 
@@ -25,23 +26,31 @@ const registerAdmin = async (req, res) => {
             });
         }
 
-        const { name, email, password } = req.body;
+        const { name, email, password } = req.body || {};
+        const normalizedEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
 
         if (
             typeof name !== "string" ||
             typeof email !== "string" ||
             typeof password !== "string" ||
-            !name.trim() ||
-            !email.trim() ||
-            !emailPattern.test(email.trim()) ||
-            password.length < 6
+            name.trim().length < 1 ||
+            name.trim().length > 100 ||
+            normalizedEmail.length > 254 ||
+            !emailPattern.test(normalizedEmail) ||
+            [...password].length < 8 ||
+            Buffer.byteLength(password, "utf8") > 72
         ) {
             return res.status(400).json({
-                message: "Valid name, email, and password of at least 6 characters are required",
+                message: "Provide a name (1-100 characters), valid email, and password (8-72 UTF-8 bytes)",
             });
         }
 
-        const normalizedEmail = email.trim().toLowerCase();
+        if (await Admin.exists({})) {
+            return res.status(409).json({
+                message: "Admin registration is closed after the initial setup",
+            });
+        }
+
         const existingAdmin = await Admin.findOne({ email: normalizedEmail });
 
         if (existingAdmin) {
@@ -69,6 +78,7 @@ const registerAdmin = async (req, res) => {
             },
         });
     } catch (error) {
+        console.error("Admin registration failed:", error);
         if (error.code === 11000) {
             return res.status(409).json({
                 message: "An admin with this email already exists",
@@ -83,21 +93,23 @@ const registerAdmin = async (req, res) => {
 
 const loginAdmin = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password } = req.body || {};
+        const normalizedEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
 
         if (
             typeof email !== "string" ||
             typeof password !== "string" ||
-            !email.trim() ||
-            !password
+            normalizedEmail.length > 254 ||
+            !emailPattern.test(normalizedEmail) ||
+            !password ||
+            Buffer.byteLength(password, "utf8") > 72
         ) {
             return res.status(400).json({
-                message: "Email and password are required",
+                message: "A valid email and password of at most 72 UTF-8 bytes are required",
             });
         }
 
-        const normalizedEmail = email.trim().toLowerCase();
-        const admin = await Admin.findOne({ email: normalizedEmail });
+        const admin = await Admin.findOne({ email: normalizedEmail }).select("+password");
 
         if (!admin) {
             return res.status(401).json({
@@ -126,6 +138,7 @@ const loginAdmin = async (req, res) => {
             },
         });
     } catch (error) {
+        console.error("Admin login failed:", error);
         return res.status(500).json({
             message: "Admin login failed",
         });
@@ -145,6 +158,7 @@ const logoutAdmin = async (req, res) => {
             message: "Admin logout successful",
         });
     } catch (error) {
+        console.error("Admin logout failed:", error);
         return res.status(500).json({
             message: "Admin logout failed",
         });

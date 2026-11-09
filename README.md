@@ -7,6 +7,7 @@ A secure REST API for receiving contact form messages and managing them through 
 - Public contact form submission
 - Protected admin login and logout
 - Secret-protected admin registration for initial setup
+- Admin registration closes after the first admin account is created
 - Admin-only contact listing and single-contact access
 - Contact status updates: `new`, `read`, and `resolved`
 - Contact deletion
@@ -26,6 +27,7 @@ A secure REST API for receiving contact form messages and managing them through 
 - cookie-parser
 - cors
 - express-rate-limit
+- helmet
 
 ## Project Structure
 
@@ -55,7 +57,7 @@ backend-contact-form-api/
 
 ### Requirements
 
-- Node.js
+- Node.js 20.19 or newer
 - npm
 - MongoDB or MongoDB Atlas
 
@@ -70,11 +72,13 @@ Copy `.env.example` to `.env` and set private values:
 ```env
 PORT=1198
 MONGO_URI=mongodb://127.0.0.1:27017/backend_contact_form_api
-JWT_SECRET=replace_with_a_long_random_secret_at_least_32_characters
-ADMIN_REGISTRATION_SECRET=replace_with_a_private_admin_setup_secret
+JWT_SECRET=change_me_generate_a_random_secret_of_at_least_32_chars
+ADMIN_REGISTRATION_SECRET=change_me_generate_a_second_random_secret_of_at_least_32_chars
 CLIENT_ORIGIN=http://localhost:5173
 NODE_ENV=development
 ```
+
+Replace both example secrets with unique random values of at least 32 characters before starting the API. Admin registration is available only until the first admin has been created. In production, set `NODE_ENV=production` and configure one or more comma-separated frontend origins in `CLIENT_ORIGIN`.
 
 Start the API:
 
@@ -98,7 +102,7 @@ The API runs at `http://localhost:1198` by default.
 | `POST` | `/api/auth/login` | No | Log in an admin and set the auth cookie |
 | `POST` | `/api/auth/logout` | No | Clear the auth cookie |
 
-Admin registration requires this header:
+Initial admin registration requires this header:
 
 ```http
 x-admin-registration-secret: YOUR_ADMIN_REGISTRATION_SECRET
@@ -143,7 +147,7 @@ Every JSON response starts with an `apiUrl` field containing the request path. T
 
 ## Authentication behavior
 
-Successful registration and login set a `token` HttpOnly cookie containing a seven-day JWT. In production, `NODE_ENV=production` enables the `Secure` cookie flag. Browser clients must send credentialed requests with `credentials: "include"` or Axios `withCredentials: true`.
+Successful initial registration and login set a `token` HttpOnly cookie containing a seven-day HS256 JWT. Admin passwords must be 8-72 UTF-8 bytes and are hashed with bcrypt. In production, `NODE_ENV=production` enables the `Secure` cookie flag. Browser clients must send credentialed requests with `credentials: "include"` or Axios `withCredentials: true`.
 
 ## Manual testing
 
@@ -185,19 +189,3 @@ Full-Stack Web Developer
 ## License
 
 This project is distributed under the [MIT License](LICENSE).
-
-## Links
-
-- Portfolio: [https://www.ashishranjan.net](https://www.ashishranjan.net)
-- GitHub: [https://github.com/a2rp](https://github.com/a2rp)
-- CodePen: [https://codepen.io/ash1198](https://codepen.io/ash1198)
-- LinkedIn: [https://www.linkedin.com/in/aashishranjan](https://www.linkedin.com/in/aashishranjan)
-- Facebook: [https://www.facebook.com/theash.ashish/](https://www.facebook.com/theash.ashish/)
-- YouTube: [https://www.youtube.com/@ashishranjan-ashz?sub_confirmation=1](https://www.youtube.com/@ashishranjan-ashz?sub_confirmation=1)
-- Email: [ash.ranjan09@gmail.com](mailto:ash.ranjan09@gmail.com)
-
-## Support
-
-- Support: [https://a2rp-donation-page.netlify.app/](https://a2rp-donation-page.netlify.app/)
-- Buy Me A Coffee: [https://buymeacoffee.com/a2rp](https://buymeacoffee.com/a2rp)
-- Patreon: [https://patreon.com/a2rp](https://patreon.com/a2rp)

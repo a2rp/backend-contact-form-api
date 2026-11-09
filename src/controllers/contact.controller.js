@@ -8,7 +8,7 @@ const isValidContactId = (id) => mongoose.isValidObjectId(id);
 
 const submitContactForm = async (req, res) => {
     try {
-        const { name, email, subject, message } = req.body;
+        const { name, email, subject, message } = req.body || {};
 
         if (
             typeof name !== "string" ||
@@ -19,6 +19,7 @@ const submitContactForm = async (req, res) => {
             !email.trim() ||
             !subject.trim() ||
             !message.trim() ||
+            email.trim().length > 254 ||
             !emailPattern.test(email.trim())
         ) {
             return res.status(400).json({
@@ -44,6 +45,7 @@ const submitContactForm = async (req, res) => {
             contactId: contact._id,
         });
     } catch (error) {
+        console.error("[API] Contact submission failed:", error.name);
         return res.status(500).json({
             message: "Failed to submit contact form",
         });
@@ -72,6 +74,7 @@ const getAllContacts = async (req, res) => {
             },
         });
     } catch (error) {
+        console.error("[API] Listing contacts failed:", error.name);
         return res.status(500).json({
             message: "Failed to fetch contact submissions",
         });
@@ -97,6 +100,7 @@ const getSingleContact = async (req, res) => {
             contact,
         });
     } catch (error) {
+        console.error("[API] Fetching contact failed:", error.name);
         return res.status(500).json({
             message: "Failed to fetch contact submission",
         });
@@ -105,7 +109,7 @@ const getSingleContact = async (req, res) => {
 
 const updateContactStatus = async (req, res) => {
     try {
-        const { status } = req.body;
+        const { status } = req.body || {};
 
         if (!isValidContactId(req.params.id)) {
             return res.status(400).json({ message: "Invalid contact id" });
@@ -133,6 +137,7 @@ const updateContactStatus = async (req, res) => {
             contact,
         });
     } catch (error) {
+        console.error("[API] Updating contact status failed:", error.name);
         return res.status(500).json({
             message: "Failed to update contact status",
         });
@@ -159,6 +164,7 @@ const deleteContact = async (req, res) => {
             message: "Contact submission deleted successfully",
         });
     } catch (error) {
+        console.error("[API] Deleting contact failed:", error.name);
         return res.status(500).json({
             message: "Failed to delete contact submission",
         });
