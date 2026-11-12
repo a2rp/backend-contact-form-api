@@ -12,7 +12,7 @@ A secure REST API for receiving contact form messages and managing them through 
 - Contact status updates: `new`, `read`, and `resolved`
 - Contact deletion
 - Input validation and length limits
-- Rate limiting for authentication and contact requests
+- Rate limiting for authentication and public contact submissions
 - Pagination for admin contact lists
 - Environment-based CORS and secure production cookies
 - Automated API tests with an in-memory MongoDB test database
@@ -147,7 +147,9 @@ Every JSON response starts with an `apiUrl` field containing the request path. T
 
 ## Authentication behavior
 
-Successful initial registration and login set a `token` HttpOnly cookie containing a seven-day HS256 JWT. Admin passwords must be 8-72 UTF-8 bytes and are hashed with bcrypt. In production, `NODE_ENV=production` enables the `Secure` cookie flag. Browser clients must send credentialed requests with `credentials: "include"` or Axios `withCredentials: true`.
+Successful initial registration and login set a `token` cookie containing a seven-day HS256 JWT with the `HttpOnly` flag. Admin passwords must be 8-72 UTF-8 bytes and are hashed with bcrypt. In development the cookie uses `SameSite=Lax`; in production it uses `SameSite=None; Secure` so a separately hosted frontend can send it over HTTPS. Production deployments must use HTTPS and set one or more exact frontend origins in `CLIENT_ORIGIN`.
+
+Requests with an `Origin` header to state-changing methods (`POST`, `PUT`, `PATCH`, and `DELETE`) are accepted only from configured frontend origins. Browser clients must send credentialed requests with `credentials: "include"` or Axios `withCredentials: true`.
 
 ## Manual testing
 

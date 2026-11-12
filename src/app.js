@@ -26,14 +26,6 @@ const authLimiter = rateLimit({
     message: { message: "Too many authentication requests. Try again later." },
 });
 
-const contactLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    limit: 20,
-    standardHeaders: "draft-8",
-    legacyHeaders: false,
-    message: { message: "Too many contact requests. Try again later." },
-});
-
 app.use((req, res, next) => {
     const originalJson = res.json.bind(res);
 
@@ -65,6 +57,18 @@ app.use(
     }),
 );
 
+const stateChangingMethods = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+
+app.use((req, res, next) => {
+    const origin = req.get("Origin");
+
+    if (origin && stateChangingMethods.has(req.method) && !allowedOrigins.includes(origin)) {
+        return res.status(403).json({ message: "Origin not allowed" });
+    }
+
+    return next();
+});
+
 app.get("/", (req, res) => {
     res.json({
         message: "Contact Form API is running",
@@ -72,7 +76,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authLimiter, authRoutes);
-app.use("/api/contacts", contactLimiter, contactRoutes);
+app.use("/api/contacts", contactRoutes);
 
 app.use((req, res) => {
     return res.status(404).json({
